@@ -2,8 +2,8 @@ package com.example.fortress;
 
 public class Tank {
 
-    public static final int TankSizeX = 2; // tank width
-    public static final int TankSizeY = 2; // tank height
+    public static final int TankSizeX = 160; // tank width
+    public static final int TankSizeY = 100; // tank height
     public static final int MaxTankhealth = 5 ; // tank health
     public static int Tankhealth = 5 ; // 탱크의 현재 체력;
 
@@ -14,6 +14,7 @@ public class Tank {
         this.TankX = x;
         this.TankY = y;
     }
+
 
     public static final int dy = 300; // 게임판 크기 : 300으로 설정 추후 변경
     public static final int dx = 300;
@@ -121,6 +122,5 @@ public class Tank {
         }
         return false; // 이외의 상황(이 일어난다면) 맞지 않은 것으로 간주
     }
-
 
 }
