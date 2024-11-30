@@ -1,31 +1,35 @@
 package com.example.fortress;
 
+import static com.example.fortress.Activity_game.ChangePlayer;
+import static com.example.fortress.Activity_game.players;
+
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class Missile {
 
+    private Tank tank;
     private Cannon cannon;
-//    private Tank tank;
 
     private static int dy ;
     private static int dx ;
 
-    public static final int MissileSizeX = 7; // tank width 15
-    public static final int MissileSizeY = 7; // tank height
+    protected static final int MissileSizeX = 7; // tank width 15
+    protected static final int MissileSizeY = 7; // tank height
 
-    public double MissileX ; // 대포 위치 - 대각선 위에 있도록
-    public double MissileY ;
+    protected double MissileX ; // 대포 위치 - 대각선 위에 있도록
+    protected double MissileY ;
 
-    public double get_MissileX(){return MissileX ; }
-    public double get_MissileY(){return MissileY ; }
+    protected double get_MissileX(){return MissileX ; }
+    protected double get_MissileY(){return MissileY ; }
 
-    public Missile(Context context, Cannon cannon) {
+    public Missile(Context context, Tank tank, Cannon cannon) {
 
+        this.tank = tank;
         this.cannon = cannon;
-//        tank = new Tank();
-//        cannon= new Cannon(context);
+
         // 화면 크기를 가져옴
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         dx = displayMetrics.widthPixels;  // 화면 너비
@@ -45,10 +49,11 @@ public class Missile {
     private float MissilePowerY;
     private final double gravitational_acceleration = 0.09806;
 
-    public static boolean Charging=false;
-    public static boolean fired = false;
+    public boolean Charging=false;
+    public boolean fired = false;
+    public static boolean onfire = false;
 
-    public void setPower() { // 내부 인자를 onclick함수-> 충전 버튼으로 게이지를 채우도록
+    public void setPower() { // 충전 버튼을 길게 누를수록 빠르게 나가도록
         if (Charging && !fired ) {
             if (MissileGauge != MaxMissileGauge) {
                 MissileGauge += 1;
@@ -62,18 +67,14 @@ public class Missile {
     public void FireCannon() { // 위와 같이 인자를 충전 버튼을 때면 작동하도록
         if (!Charging && fired) {
             double angle = Math.toRadians(cannon.CannonDir);
-//            double angle = (cannon.CannonDir);
-            Log.d("as","angle = " + angle);
             MissilePower =(float) (MissileGauge * 0.5 * (Math.PI) ) ;
-//            MissilePower =(float) ((MissileGauge * 0.4 + 1 )* Math.PI * 1.5) ;
-//            double power = (MissileGauge * 0.5) + 5; // 초기 발사 속도
             MissilePowerX = (float) (MissilePower * Math.cos(angle));
             MissilePowerY = (float) (MissilePower * Math.sin(angle));
 
             fired = true;
 
         }
-//        MissileGauge = MinMissileGauge; // 게이지 초기화
+        MissileGauge = MinMissileGauge; // 게이지 초기화
     }
 
     public void updatePosition(Tank tank) {
@@ -94,12 +95,31 @@ public class Missile {
             }
         }
     }
+    public void updateReversePosition(Tank tank) {
+        if (fired) {
+            MissilePowerY -= 1.2 * gravitational_acceleration; // 중력 가속도 적용
+            MissileX -= MissilePowerX; // x축 속도에 따른 이동
+            MissileY -= MissilePowerY; // y축 속도에 따른 이동
 
+            // 충돌 체크
+            if (isHit(tank)) {
+                Log.d("GameSurfaceView", "Missile hit the dummy tank!");
+                fired = false; // 충돌 시 미사일 비활성화
+                resetPosition();
+            } else if (MissileX < 0 || MissileX > dx || MissileY > dy || MissileY < 0) {
+                // 화면 밖으로 나가면 미사일 발사를 중단
+                fired = false;
+                resetPosition();
+            }
+        }
+    }
 
     private void resetPosition() {
         // 초기 위치로 되돌리기
         MissileX = cannon.get_CannonX();
         MissileY = cannon.get_CannonY();
+        onfire = false;
+        players = ChangePlayer(players);
     }
 
     public boolean isHit(Tank tank) {
@@ -122,5 +142,69 @@ public class Missile {
         return collisionX && collisionY;
     }
 
+    public enum Direction {
+        Error(-1), Up(0), Down(1), Right(2), Left(3);
+        private final int value;
+        private Direction(int value) {this.value = value ; }
+    }
+
+    public void move(Direction dir, Terrain terrain) { // 위아래로 움직이면 대포의 각도를 조정하고, 좌우로 움직이면 탱크의 위치를 조정함
+
+        switch (dir) {
+
+            case Up:
+                cannon.CannonDir += cannon.CannonMove;
+                if (cannon.CannonDir >= cannon.MaxCannonDir) {
+                    cannon.CannonDir -= cannon.CannonMove;
+                }
+                break;
+            case Down:
+                cannon.CannonDir -= cannon.CannonMove;
+                if (cannon.CannonDir <= cannon.MinCannonDir) {
+                    cannon.CannonDir += cannon.CannonMove;
+                }
+                break;
+            case Right:
+                tank.TankX += 5;
+                cannon.CannonX += 5;
+                MissileX += 5;
+                if (isCrushed()) {  // 충돌했으면 되돌림
+                    tank.TankX -= 5;
+                    cannon.CannonX -= 5;
+                    MissileX -= 5;
+                }
+                break;
+            case Left:
+                tank.TankX -= 5;
+                cannon.CannonX -=5;
+                MissileX -= 5;
+                if (isCrushed()) {
+                    tank.TankX += 5;
+                    cannon.CannonX += 5;
+                    MissileX += 5;
+                }
+                break;
+        }
+        tank.TankY = terrain.getTerrainY((int) tank.TankX + tank.TankSizeX / 2) - tank.TankSizeY;
+        cannon.CannonY = tank.TankY + 5;
+        Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
+
+    }
+
+    public void setFire() {
+        Charging = true;
+        setPower();
+    }
+
+    public boolean FireMissile() {
+        Charging = false;
+        fired = true;
+        FireCannon();
+        return true;
+    }
+
+    public boolean isCrushed() {
+        return tank.TankX < 0 || (tank.TankX + tank.TankSizeX > dx);
+    }
 
 }
