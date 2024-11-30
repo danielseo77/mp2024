@@ -35,6 +35,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public static Missile Turn;
 
+    public Terrain terrain;
+
     private Bitmap tankBitmap;
     private Bitmap cannonBitmap;
     private Bitmap missileBitmap;
@@ -43,9 +45,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap dummyCannonBitmap;
     private Bitmap dummyMissileBitmap;
 
+    private Bitmap terrainBitmap;
 
     private float dx;
     private float dy;
+
+    private int width;
+    private int height;
 
     public static int y = 0;
     public static int x = 0;
@@ -61,12 +67,12 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         dy = displayMetrics.heightPixels; // 화면 높이
 
         // tank 정의
-        tank = new Tank(x, y);
+        tank = new Tank(x, 265);
         cannon = new Cannon(context, tank);
         missile = new Missile(context, tank, cannon);
 
         // dummy tank 정의
-        Dummy = new Tank((int)dx - tank.TankSizeX, 0);
+        Dummy = new Tank((int)dx - tank.TankSizeX, 186);
         dummyCannon = new Cannon(context, Dummy);
         dummyMissile = new Missile(context, Dummy, dummyCannon);
 
@@ -92,6 +98,20 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // SurfaceView의 기본 배경 제거
         this.setBackgroundColor(Color.TRANSPARENT);
+
+        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            width = getWidth();
+            height = getHeight();
+
+            Log.d("GameSurfaceView", "Width: " + width + ", Height: " + height);
+
+            terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image);
+            terrainBitmap = Bitmap.createScaledBitmap(terrainBitmap, width, height, true);
+
+            terrain = new Terrain(terrainBitmap);
+            terrain.print();
+        });
+
     }
 
 
@@ -151,29 +171,29 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             Turn = dummyMissile;
         }
 
-        canvas.drawColor(Color.WHITE); // 배경 색상
-
         int screenHeight = canvas.getHeight();
         int screenWidth = canvas.getWidth();
 
         // tank, cannon drawing
-        float Tankleft = (float) tank.get_TankX() ;
-        float Tanktop = screenHeight - (float) tank.get_TankY() - tankBitmap.getHeight();
+        float Tankleft = (float) tank.get_TankX();
+        float Tanktop = (float) tank.get_TankY();
 
         float Cannonleft = (float) cannon.get_CannonX();
-        float Cannontop = screenHeight - (float) cannon.get_CannonY()- cannonBitmap.getHeight();
+        float Cannontop = (float) cannon.get_CannonY();
 
 //        float Missileleft = (float) missile.get_MissileX(); // 기본 미사일 위치
 //        float Missiletop = screenHeight - (float) missile.get_MissileY()- missileBitmap.getHeight();
 
         // dummy tank, cannon drawing
         float Dummyleft = (float) Dummy.get_TankX();
-        float Dummytop = screenHeight - (float) Dummy.get_TankY() - dummyBitmap.getHeight();
+        float Dummytop = (float) Dummy.get_TankY();
 
-        float dummyCannonleft = (float) dummyCannon.get_CannonX() ;
-        float dummyCannontop = screenHeight - (float) dummyCannon.get_CannonY() - dummyCannonBitmap.getHeight();
+        float dummyCannonleft = (float) dummyCannon.get_CannonX();
+        float dummyCannontop = (float) dummyCannon.get_CannonY();
 
         //canvas.drawBitmap(tankBitmap, left, top, paint);
+        canvas.drawBitmap(terrainBitmap, 0, 0, paint);
+
         canvas.drawBitmap(tankBitmap, Tankleft, Tanktop, paint);
 
         canvas.drawBitmap(dummyBitmap, Dummyleft, Dummytop, paint);
@@ -244,16 +264,16 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         switch (dir) {
 
             case Up:
-                Turn.move(dir.Up);
+                Turn.move(dir.Up, terrain);
                 break;
             case Down:
-                Turn.move(dir.Down);
+                Turn.move(dir.Down, terrain);
                 break;
             case Right:
-                Turn.move(dir.Right);
+                Turn.move(dir.Right, terrain);
                 break;
             case Left:
-                Turn.move(dir.Left);
+                Turn.move(dir.Left, terrain);
                 break;
         }
     }

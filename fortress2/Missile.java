@@ -4,6 +4,7 @@ import static com.example.fortress.Activity_game.ChangePlayer;
 import static com.example.fortress.Activity_game.players;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -147,7 +148,7 @@ public class Missile {
         private Direction(int value) {this.value = value ; }
     }
 
-    public void move(Direction dir) { // 위아래로 움직이면 대포의 각도를 조정하고, 좌우로 움직이면 탱크의 위치를 조정함
+    public void move(Direction dir, Terrain terrain) { // 위아래로 움직이면 대포의 각도를 조정하고, 좌우로 움직이면 탱크의 위치를 조정함
 
         switch (dir) {
 
@@ -170,7 +171,7 @@ public class Missile {
                 if (isCrushed()) {  // 충돌했으면 되돌림
                     tank.TankX -= 5;
                     cannon.CannonX -= 5;
-                    MissileY -= 5;
+                    MissileX -= 5;
                 }
                 break;
             case Left:
@@ -184,6 +185,10 @@ public class Missile {
                 }
                 break;
         }
+        tank.TankY = terrain.getTerrainY((int) tank.TankX + tank.TankSizeX / 2) - tank.TankSizeY;
+        cannon.CannonY = tank.TankY + 5;
+        Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
+
     }
 
     public void setFire() {
@@ -199,9 +204,7 @@ public class Missile {
     }
 
     public boolean isCrushed() {
-        if (tank.TankX == 0 || tank.TankX + tank.TankSizeX == dx) {
-            return true;
-        }
-        return false;
+        return tank.TankX < 0 || (tank.TankX + tank.TankSizeX > dx);
     }
+
 }
