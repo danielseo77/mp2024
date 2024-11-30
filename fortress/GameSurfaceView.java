@@ -30,33 +30,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private Bitmap cannonBitmap;
     private Bitmap missileBitmap;
     private Bitmap dummyBitmap;
+    private Bitmap terrainBitmap;
 
     private Tank Dummy;
 
     private float dx;
     private float dy;
 
-
+    private int width;
+    private int height;
 
     public static int y = 0;
-    public static int x = 0;
+    public static int x = 100;
 
 
     public GameSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         getHolder().addCallback(this);
         paint = new Paint();
-        tank = new Tank(x, y);
+        tank = new Tank(x + 100, y);
         cannon = new Cannon(context, tank);
         missile = new Missile(context, cannon);
-
 
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         dx = displayMetrics.widthPixels;  // 화면 너비
         dy = displayMetrics.heightPixels; // 화면 높이
 
-        Dummy = new Tank((int)dx - tank.TankSizeX, 0);
+        Dummy = new Tank((int)dx - tank.TankSizeX - 100, 0);
 
 
         tankBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tank_without_cannon_left); //이미지 가져오기
@@ -73,6 +74,18 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // SurfaceView의 기본 배경 제거
         this.setBackgroundColor(Color.TRANSPARENT);
+
+        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            width = getWidth();
+            height = getHeight();
+
+            Log.d("GameSurfaceView", "Width: " + width + ", Height: " + height);
+
+            terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image);
+            terrainBitmap = Bitmap.createScaledBitmap(terrainBitmap, width, height, true);
+        });
+
+
     }
 
 
@@ -98,6 +111,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void run() { // 계속 draw함
@@ -127,28 +141,38 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 //        Log.d("fired?" ,"cannonDir? " + cannon.CannonDir);
 //        Log.d("fired?" ,"cannonDir? " + cannon.MaxCannonDir);
 
-        canvas.drawColor(Color.WHITE); // 배경 색상
+        //canvas.drawColor(Color.WHITE); // 배경 색상
 
         int screenHeight = canvas.getHeight();
         int screenWidth = canvas.getWidth();
 
-        float Tankleft = (float) tank.get_TankX() ;
-        float Tanktop = screenHeight - (float) tank.get_TankY() - tankBitmap.getHeight();
+        float Tankleft = (float) tank.get_TankX();
+        //float Tanktop = screenHeight - (float) tank.get_TankY() - tankBitmap.getHeight();
+        float Tankbottom = getTerrainTopY((int) Tankleft);
+        tank.TankY = Tankbottom - tank.TankSizeY;
+        //float top = getTerrainTopY((int) Tankleft);
 
 //        float Dummyleft = (float) screenWidth - Dummy.TankSizeX;
         float Dummyleft = (float) Dummy.get_TankX();
-        float Dummytop = screenHeight - (float) Dummy.get_TankY() - dummyBitmap.getHeight();
+        //float Dummytop = screenHeight - (float) Dummy.get_TankY() - dummyBitmap.getHeight();
+        float Dummybottom = getTerrainTopY((int) Dummyleft);
+        Dummy.TankY = Dummybottom - tank.TankSizeY;
 
-        float Cannonleft = (float) cannon.get_CannonX();
-        float Cannontop = screenHeight - (float) cannon.get_CannonY()- cannonBitmap.getHeight();
+        float Cannonleft = (float) cannon.get_CannonX() + 6;
+        float Cannontop = (float) (tank.get_TankY() + 4);
 
         float Missileleft = (float) missile.get_MissileX();
         float Missiletop = screenHeight - (float) missile.get_MissileY()- missileBitmap.getHeight();
 
         //canvas.drawBitmap(tankBitmap, left, top, paint);
-        canvas.drawBitmap(tankBitmap, Tankleft, Tanktop, paint);
 
-        canvas.drawBitmap(dummyBitmap, Dummyleft, Dummytop, paint);
+        canvas.drawBitmap(terrainBitmap, 0, 0, paint);
+
+        canvas.drawBitmap(tankBitmap, Tankleft, (float) tank.TankY, paint);
+
+        canvas.drawBitmap(dummyBitmap, Dummyleft, (float) Dummy.TankY, paint);
+
+
 
         // 대포의 변환 행렬
         Matrix cannonMatrix = new Matrix();
@@ -179,6 +203,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
 
     }
+
 
     public enum Direction {
         Up(0), Down(1), Right(2), Left(3);
@@ -263,5 +288,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             return true;
         }
         return false;
+    }
+
+    private int getTerrainTopY(int x) {
+        // 위에서 아래로 스캔
+        for (int y = 0; y < terrainBitmap.getHeight(); y++) {
+            int pixelColor = terrainBitmap.getPixel(x, y);
+
+            // 검은색 픽셀 확인
+            if ((pixelColor & 0xFFFFFF) == 0x000000) {
+                return y; // 검은색 픽셀 Y 좌표 반환
+            }
+        }
+
+        return -1; // 검은색이 없는 경우
     }
 }
