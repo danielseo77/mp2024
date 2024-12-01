@@ -82,7 +82,8 @@ public class Missile {
             MissilePowerY -= 1.2 * gravitational_acceleration; // 중력 가속도 적용
             MissileX += MissilePowerX; // x축 속도에 따른 이동
             MissileY -= MissilePowerY; // y축 속도에 따른 이동
-
+            Log.d("GameSurfaceView", "MisslieX : " + MissileX + " MissileY : " + MissileY);
+            Log.d("GameSurfaceView", "tankX : " + tank.TankX + " tankY : " + tank.TankY);
             // 충돌 체크
             if (isHit(tank)) {
                 Log.d("GameSurfaceView", "Missile hit the dummy tank!");
@@ -124,22 +125,17 @@ public class Missile {
 
     public boolean isHit(Tank tank) {
         // Y 좌표 변환 적용
-        double missileLeft = MissileX;
-        double missileRight = MissileX + MissileSizeX;
-        double missileTop = MissileY;
-        double missileBottom = MissileY - MissileSizeY;
+        double missilex = MissileX + (double) MissileSizeX / 2;
+        double missiley = MissileY + (double) MissileSizeY / 2;
 
         double tankLeft = tank.get_TankX();
         double tankRight = tank.get_TankX() + tank.TankSizeX;
         double tankTop = tank.get_TankY();
-        double tankBottom = tank.get_TankY()- tank.TankSizeY;
+        double tankBottom = tank.get_TankY() + tank.TankSizeY;
 
-
-        // 정확한 충돌 조건
-        boolean collisionX = missileLeft < tankRight && missileRight > tankLeft;
-        boolean collisionY = missileTop < tankBottom && missileBottom > tankTop;
-
-        return collisionX && collisionY;
+        boolean hitx = missilex > tankLeft && missilex < tankRight;
+        boolean hity = missiley > tankTop && missiley < tankBottom;
+        return (hitx && hity);
     }
 
     public enum Direction {
@@ -187,7 +183,7 @@ public class Missile {
         }
         tank.TankY = terrain.getTerrainY((int) tank.TankX + tank.TankSizeX / 2) - tank.TankSizeY;
         cannon.CannonY = tank.TankY + 5;
-        Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
+        //Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
 
     }
 
