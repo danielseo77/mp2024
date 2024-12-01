@@ -32,6 +32,24 @@
             android:layout_marginEnd="93dp"
             android:text="↩️" />
 
+        <ProgressBar
+            android:id="@+id/hpbar_player1"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="131dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="30dp" />
+
+        <ProgressBar
+            android:id="@+id/hpbar_player2"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="131dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="30dp" />
+
     </RelativeLayout>
 
     <!-- 게임 화면 -->
