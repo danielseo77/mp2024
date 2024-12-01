@@ -1,0 +1,124 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity_game">
+
+    <!-- 상단 상태 뷰 -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#CCCCCC">
+
+        <Button
+            android:id="@+id/btn_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="93dp"
+            android:text="∥" />
+
+        <ProgressBar
+            android:id="@+id/hpbar_player1"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="131dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="200dp"
+            android:layout_marginTop="30dp" />
+
+        <ProgressBar
+            android:id="@+id/hpbar_player2"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="131dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="200dp"
+            android:layout_marginTop="30dp" />
+
+    </RelativeLayout>
+
+    <!-- 게임 화면 -->
+    <com.example.fortress.GameSurfaceView
+        android:id="@+id/game_surface"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#000000" />
+
+    <!-- 하단 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|start"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 첫 번째 행: X와 ↑ -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_nothing"
+                android:layout_width="61dp"
+                android:layout_height="wrap_content"
+                android:text="X"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_up"
+                android:layout_width="61dp"
+                android:layout_height="wrap_content"
+                android:text="↑" />
+        </LinearLayout>
+
+        <!-- 두 번째 행: ←, ↓, →, 발사 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_left"
+                android:layout_width="61dp"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="←" />
+
+            <Button
+                android:id="@+id/btn_down"
+                android:layout_width="61dp"
+                android:layout_height="wrap_content"
+                android:text="↓" />
+
+            <Button
+                android:id="@+id/btn_right"
+                android:layout_width="61dp"
+                android:layout_height="wrap_content"
+                android:text="→" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/btn_fire"
+                        android:layout_width="61dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="ㆍ"/>
+                </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
