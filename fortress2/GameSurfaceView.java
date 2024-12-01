@@ -19,6 +19,7 @@ import android.view.SurfaceView;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
+    private OnHealthChangeListener healthChangeListener;
     public boolean pause = false;
 
     private Thread renderThread;
@@ -55,6 +56,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     public static int y = 0;
     public static int x = 0;
+
+    private int ishit;
 
 
     public GameSurfaceView(Context context, AttributeSet attrs) {
@@ -114,6 +117,13 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     }
 
+    public void setHealthChangeListener(OnHealthChangeListener listener) {
+        this.healthChangeListener = listener;
+    }
+
+    public interface OnHealthChangeListener {
+        void onHealthChanged(int playerNum, int newHp);
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -216,8 +226,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // missile의 변환행렬
         if (!pause) {
-            missile.updatePosition(Dummy); // 미사일 위치 업데이트
-
+            ishit = missile.updatePosition(Dummy); // 미사일 위치 업데이트
+            if (ishit == 1) {
+                healthChangeListener.onHealthChanged(1, Dummy.Tankhealth);
+            }
         }
 
         Matrix missileMatrix = new Matrix();
@@ -237,8 +249,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // dummy missile의 변환행렬
         if (!pause) {
-            dummyMissile.updateReversePosition(tank); // 더미 미사일 위치 업데이트
-
+            ishit = dummyMissile.updateReversePosition(tank); // 더미 미사일 위치 업데이트
+            if (ishit == 1) {
+                healthChangeListener.onHealthChanged(0, tank.Tankhealth);
+            }
         }
 
         Matrix dummyMissileMatrix = new Matrix();

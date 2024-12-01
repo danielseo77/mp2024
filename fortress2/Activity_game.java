@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,11 @@ public class Activity_game extends AppCompatActivity {
     Button btnFire;
     Button btnPause;
     Button btnQuit;
+
+    ProgressBar hpbar1;
+    ProgressBar hpbar2;
+    private int hp1 = 100;
+    private int hp2 = 100;
 
     private GameSurfaceView gameSurface;
 
@@ -113,6 +119,29 @@ public class Activity_game extends AppCompatActivity {
         btnFire = findViewById(R.id.btn_fire);
         btnPause = findViewById(R.id.btn_pause);
         btnQuit = findViewById(R.id.btn_quit);
+
+        hpbar1 = findViewById(R.id.hpbar_player1);
+        hpbar2 = findViewById(R.id.hpbar_player2);
+        hpbar1.setMax(5);
+        hpbar2.setMax(5);
+        hpbar1.setProgress(hp1);
+        hpbar2.setProgress(hp2);
+
+        gameSurface.setHealthChangeListener((playerNum, newHp) -> runOnUiThread(() -> {
+            if (playerNum == 0) {
+                hp1 = newHp;
+                hpbar1.setProgress(hp1);
+            } else if (playerNum == 1) {
+                hp2 = newHp;
+                hpbar2.setProgress(hp2);
+            }
+
+            if (hp1 <= 0) {
+                Log.d("game", "player1 win");
+            } else if (hp2 <= 0) {
+                Log.d("game", "player0 win");
+            }
+        }));
 
         btnLeft.setOnTouchListener(createMoveListener);
         btnRight.setOnTouchListener(createMoveListener);
