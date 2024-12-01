@@ -110,12 +110,12 @@ public class Missile {
                 Log.d("GameSurfaceView", "Missile hit the dummy tank!");
                 fired = false; // 충돌 시 미사일 비활성화
                 resetPosition();
+                tank.Tankhealth--;
+                return 1;
             } else if (MissileX < 0 || MissileX > dx || MissileY > dy || MissileY < 0) {
                 // 화면 밖으로 나가면 미사일 발사를 중단
                 fired = false;
                 resetPosition();
-                tank.Tankhealth--;
-                return 1;
             }
         }
         return 0;
