@@ -78,33 +78,17 @@ public class Missile {
         MissileGauge = MinMissileGauge; // 게이지 초기화
     }
 
-    public int updatePosition(Tank tank) {
+    public int updatePosition(int PlayerNum, Tank tank, Terrain terrain) {
         if (fired) {
-            MissilePowerY -= 1.2 * gravitational_acceleration; // 중력 가속도 적용
-            MissileX += MissilePowerX; // x축 속도에 따른 이동
+            MissilePowerY -= (float) (1.2 * gravitational_acceleration); // 중력 가속도 적용
             MissileY -= MissilePowerY; // y축 속도에 따른 이동
-            Log.d("GameSurfaceView", "MisslieX : " + MissileX + " MissileY : " + MissileY);
-            Log.d("GameSurfaceView", "tankX : " + tank.TankX + " tankY : " + tank.TankY);
-            // 충돌 체크
-            if (isHit(tank)) {
-                Log.d("GameSurfaceView", "Missile hit the dummy tank!");
-                fired = false; // 충돌 시 미사일 비활성화
-                resetPosition();
-                tank.Tankhealth--;
-                return 1;
-            } else if (MissileX < 0 || MissileX > dx || MissileY > dy || MissileY < 0) {
-                // 화면 밖으로 나가면 미사일 발사를 중단
-                fired = false;
-                resetPosition();
+
+            if (PlayerNum == Activity_game.PlayerNum.Player1.value()) {
+                MissileX += MissilePowerX; // x축 속도에 따른 이동
             }
-        }
-        return 0;
-    }
-    public int updateReversePosition(Tank tank) {
-        if (fired) {
-            MissilePowerY -= 1.2 * gravitational_acceleration; // 중력 가속도 적용
-            MissileX -= MissilePowerX; // x축 속도에 따른 이동
-            MissileY -= MissilePowerY; // y축 속도에 따른 이동
+            else if (PlayerNum == Activity_game.PlayerNum.Player2.value()) {
+                MissileX -= MissilePowerX; // x축 속도에 따른 이동
+            } else { Log.d("Missile.java", "PlayerNUm not exist"); return -1; }
 
             // 충돌 체크
             if (isHit(tank)) {
@@ -113,10 +97,11 @@ public class Missile {
                 resetPosition();
                 tank.Tankhealth--;
                 return 1;
-            } else if (MissileX < 0 || MissileX > dx || MissileY > dy || MissileY < 0 ) {
+            } else if (MissileX < 0 || MissileX > dx || MissileY < 0 || terrain.getY((int) MissileX, (int) MissileY)) {
                 // 화면 밖으로 나가면 미사일 발사를 중단
                 fired = false;
                 resetPosition();
+                Log.d("Missile", "position : " + MissileX + " " + MissileY);
             }
         }
         return 0;

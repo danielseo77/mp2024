@@ -49,6 +49,11 @@ public class Terrain {
         }
         return -1;
     }
+
+    public boolean getY(int x, int y) {
+        return terrainArray[y][x];
+    }
+
     public void print() {
         Log.d("Terrain", "width : " + width + " height : " + height + " terrainArray : " + terrainArray[400][400]);
     }

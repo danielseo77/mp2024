@@ -230,7 +230,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // missile의 변환행렬
         if (!pause) {
-            ishit = missile.updatePosition(Dummy); // 미사일 위치 업데이트
+            ishit = missile.updatePosition(Activity_game.PlayerNum.Player1.value(), Dummy, terrain); // 미사일 위치 업데이트
             if (ishit == 1) {
                 healthChangeListener.onHealthChanged(1, Dummy.Tankhealth);
             }
@@ -253,7 +253,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
         // dummy missile의 변환행렬
         if (!pause) {
-            ishit = dummyMissile.updateReversePosition(tank); // 더미 미사일 위치 업데이트
+            ishit = dummyMissile.updatePosition(Activity_game.PlayerNum.Player2.value(), tank, terrain); // 더미 미사일 위치 업데이트
             if (ishit == 1) {
                 healthChangeListener.onHealthChanged(0, tank.Tankhealth);
             }

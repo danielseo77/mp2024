@@ -79,6 +79,7 @@ public class Activity_game extends AppCompatActivity {
         Player1(0), Player2(1);
         private final int value;
         private PlayerNum(int value) { this.value = value; }
+        public int value() { return value; }
     }
 
     public static PlayerNum ChangePlayer(PlayerNum playerNumber) { // 미사일을 쏘고 나면 플레이어의 차례가 바뀌도록 함
