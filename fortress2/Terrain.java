@@ -10,6 +10,7 @@ public class Terrain {
     private boolean[][] terrainArray; // 지형 정보 저장
     private int width;
     private int height;
+    private final int slope = 5;
 
     public Terrain(Bitmap bitmap) {
         this.width = bitmap.getWidth();
@@ -28,9 +29,25 @@ public class Terrain {
         return array;
     }
 
-    public int getTerrainY(int x) {
+    public int getTerrain(int x) { // 주어진 x좌표에 대한 y값
         for (int y = 0; y < height; y++) {
-            if (terrainArray[y][x]) { return y; }
+            if (terrainArray[y][x]) {
+                return y;
+            }
+        }
+        return -1;
+    }
+
+    public int getTerrainSlope(int x, int tankY) { // 경사 여부
+        int nextY = tankY + Tank.TankSizeY - slope;
+        int y;
+        if (terrainArray[nextY][x]) { return -1; }
+        else {
+            for (y= nextY; y < height; y++) {
+                if (terrainArray[y][x]) {
+                    return y;
+                }
+            }
         }
         return -1;
     }

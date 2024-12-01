@@ -15,6 +15,7 @@ public class Missile {
 
     private static int dy ;
     private static int dx ;
+    private int check;
 
     public static final int MissileSizeX = 7; // tank width 15
     public static final int MissileSizeY = 7; // tank height
@@ -82,8 +83,8 @@ public class Missile {
             MissilePowerY -= 1.2 * gravitational_acceleration; // 중력 가속도 적용
             MissileX += MissilePowerX; // x축 속도에 따른 이동
             MissileY -= MissilePowerY; // y축 속도에 따른 이동
-            Log.d("GameSurfaceView", "MisslieX : " + MissileX + " MissileY : " + MissileY);
-            Log.d("GameSurfaceView", "tankX : " + tank.TankX + " tankY : " + tank.TankY);
+            //Log.d("GameSurfaceView", "MisslieX : " + MissileX + " MissileY : " + MissileY);
+            //Log.d("GameSurfaceView", "tankX : " + tank.TankX + " tankY : " + tank.TankY);
             // 충돌 체크
             if (isHit(tank)) {
                 Log.d("GameSurfaceView", "Missile hit the dummy tank!");
@@ -170,25 +171,32 @@ public class Missile {
                 tank.TankX += 5;
                 cannon.CannonX += 5;
                 MissileX += 5;
-                if (isCrushed()) {  // 충돌했으면 되돌림
+                check = terrain.getTerrainSlope((int) tank.TankX + Tank.TankSizeX / 2, (int) tank.TankY);
+                if (check == -1 || isCrushed()) {  // 경사가 높거나 충돌할 경우
                     tank.TankX -= 5;
                     cannon.CannonX -= 5;
                     MissileX -= 5;
+                } else { // 이동
+                    tank.TankY = check - Tank.TankSizeY;
+                    cannon.CannonY = tank.TankY + 5;
                 }
                 break;
             case Left:
                 tank.TankX -= 5;
                 cannon.CannonX -=5;
                 MissileX -= 5;
-                if (isCrushed()) {
+                check = terrain.getTerrainSlope((int) tank.TankX + Tank.TankSizeX / 2, (int) tank.TankY);
+                if (check == -1 || isCrushed()) {
                     tank.TankX += 5;
                     cannon.CannonX += 5;
                     MissileX += 5;
+                } else {
+                    tank.TankY = check - Tank.TankSizeY;
+                    cannon.CannonY = tank.TankY + 5;
                 }
                 break;
         }
-        tank.TankY = terrain.getTerrainY((int) tank.TankX + Tank.TankSizeX / 2) - Tank.TankSizeY;
-        cannon.CannonY = tank.TankY + 5;
+
         //Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
 
     }
@@ -208,5 +216,6 @@ public class Missile {
     public boolean isCrushed() {
         return tank.TankX < 0 || (tank.TankX + Tank.TankSizeX > dx);
     }
+
 
 }
