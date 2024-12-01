@@ -69,38 +69,25 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         dx = displayMetrics.widthPixels;  // 화면 너비
         dy = displayMetrics.heightPixels; // 화면 높이
 
-        // tank 정의
-        tank = new Tank(x, 265);
-        cannon = new Cannon(context, tank);
-        missile = new Missile(context, tank, cannon);
-
-        // dummy tank 정의
-        Dummy = new Tank((int)dx - tank.TankSizeX, 186);
-        dummyCannon = new Cannon(context, Dummy);
-        dummyMissile = new Missile(context, Dummy, dummyCannon);
-
         // tank bitmap 생성
         tankBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tank_without_cannon_left); //이미지 가져오기
-        tankBitmap = Bitmap.createScaledBitmap(tankBitmap, tank.TankSizeX, tank.TankSizeY, true);  //size맞추기
+        tankBitmap = Bitmap.createScaledBitmap(tankBitmap, Tank.TankSizeX, Tank.TankSizeY, true);  //size맞추기
 
         cannonBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cannon_left);
-        cannonBitmap = Bitmap.createScaledBitmap(cannonBitmap, cannon.CannonSizeX, cannon.CannonSizeY, true);
+        cannonBitmap = Bitmap.createScaledBitmap(cannonBitmap, Cannon.CannonSizeX, Cannon.CannonSizeY, true);
 
         missileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
-        missileBitmap = Bitmap.createScaledBitmap(missileBitmap, missile.MissileSizeX, missile.MissileSizeY, true);
+        missileBitmap = Bitmap.createScaledBitmap(missileBitmap, Missile.MissileSizeX, Missile.MissileSizeY, true);
 
         // dummy tank bitmap 생성
         dummyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.tank_without_cannon_right);
-        dummyBitmap = Bitmap.createScaledBitmap(dummyBitmap, tank.TankSizeX, tank.TankSizeY, true);
+        dummyBitmap = Bitmap.createScaledBitmap(dummyBitmap, Tank.TankSizeX, Tank.TankSizeY, true);
 
         dummyCannonBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.cannon_right);
-        dummyCannonBitmap = Bitmap.createScaledBitmap(dummyCannonBitmap, dummyCannon.CannonSizeX, dummyCannon.CannonSizeY, true);
+        dummyCannonBitmap = Bitmap.createScaledBitmap(dummyCannonBitmap, Cannon.CannonSizeX, Cannon.CannonSizeY, true);
 
         dummyMissileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
-        dummyMissileBitmap = Bitmap.createScaledBitmap(dummyMissileBitmap, missile.MissileSizeX, missile.MissileSizeY, true);
-
-        // SurfaceView의 기본 배경 제거
-        this.setBackgroundColor(Color.TRANSPARENT);
+        dummyMissileBitmap = Bitmap.createScaledBitmap(dummyMissileBitmap, Missile.MissileSizeX, Missile.MissileSizeY, true);
 
         getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             width = getWidth();
@@ -113,7 +100,20 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
             terrain = new Terrain(terrainBitmap);
             terrain.print();
+
+            // tank 정의
+            tank = new Tank(x, terrain.getTerrainY(x + Tank.TankSizeX / 2) - Tank.TankSizeY);
+            cannon = new Cannon(context, tank);
+            missile = new Missile(context, tank, cannon);
+
+            // dummy tank 정의
+            Dummy = new Tank((int)dx - Tank.TankSizeX, terrain.getTerrainY((int)dx - Tank.TankSizeX / 2) - Tank.TankSizeY);
+            dummyCannon = new Cannon(context, Dummy);
+            dummyMissile = new Missile(context, Dummy, dummyCannon);
         });
+
+        // SurfaceView의 기본 배경 제거
+        this.setBackgroundColor(Color.TRANSPARENT);
 
     }
 
@@ -235,8 +235,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Matrix missileMatrix = new Matrix();
         missileMatrix.postScale(1, -1);
         if (!missile.fired) {
-            missile.MissileX = (float) ((Cannonleft + Math.cos(Math.toRadians(cannon.CannonDir)) * cannon.CannonSizeX));
-            missile.MissileY = (float) ((Cannontop - Math.sin(Math.toRadians(cannon.CannonDir)) * cannon.CannonSizeX));
+            missile.MissileX = (float) ((Cannonleft + Math.cos(Math.toRadians(cannon.CannonDir)) * Cannon.CannonSizeX));
+            missile.MissileY = (float) ((Cannontop - Math.sin(Math.toRadians(cannon.CannonDir)) * Cannon.CannonSizeX));
             missileMatrix.postTranslate(0, missileBitmap.getHeight());
             missileMatrix.postRotate(-(float) cannon.CannonDir, 0, 0);
             missileMatrix.postTranslate((float) missile.MissileX, (float) missile.MissileY);
@@ -258,8 +258,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         Matrix dummyMissileMatrix = new Matrix();
         dummyMissileMatrix.postScale(-1, -1);
         if (!dummyMissile.fired) {
-            dummyMissile.MissileX = (float) ((dummyCannonleft - Math.cos(Math.toRadians(dummyCannon.CannonDir)) * dummyCannon.CannonSizeX));
-            dummyMissile.MissileY = (float) ((dummyCannontop - Math.sin(Math.toRadians(dummyCannon.CannonDir)) * dummyCannon.CannonSizeX));
+            dummyMissile.MissileX = (float) ((dummyCannonleft - Math.cos(Math.toRadians(dummyCannon.CannonDir)) * Cannon.CannonSizeX));
+            dummyMissile.MissileY = (float) ((dummyCannontop - Math.sin(Math.toRadians(dummyCannon.CannonDir)) * Cannon.CannonSizeX));
             dummyMissileMatrix.postTranslate(0, dummyMissileBitmap.getHeight());
             dummyMissileMatrix.postRotate(-(float) dummyCannon.CannonDir, 0, 0);
             dummyMissileMatrix.postTranslate((float) dummyMissile.MissileX, (float) dummyMissile.MissileY);

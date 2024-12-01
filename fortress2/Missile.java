@@ -16,8 +16,8 @@ public class Missile {
     private static int dy ;
     private static int dx ;
 
-    protected static final int MissileSizeX = 7; // tank width 15
-    protected static final int MissileSizeY = 7; // tank height
+    public static final int MissileSizeX = 7; // tank width 15
+    public static final int MissileSizeY = 7; // tank height
 
     protected double MissileX ; // 대포 위치 - 대각선 위에 있도록
     protected double MissileY ;
@@ -135,9 +135,9 @@ public class Missile {
         double missiley = MissileY + (double) MissileSizeY / 2;
 
         double tankLeft = tank.get_TankX();
-        double tankRight = tank.get_TankX() + tank.TankSizeX;
+        double tankRight = tank.get_TankX() + Tank.TankSizeX;
         double tankTop = tank.get_TankY();
-        double tankBottom = tank.get_TankY() + tank.TankSizeY;
+        double tankBottom = tank.get_TankY() + Tank.TankSizeY;
 
         boolean hitx = missilex > tankLeft && missilex < tankRight;
         boolean hity = missiley > tankTop && missiley < tankBottom;
@@ -187,7 +187,7 @@ public class Missile {
                 }
                 break;
         }
-        tank.TankY = terrain.getTerrainY((int) tank.TankX + tank.TankSizeX / 2) - tank.TankSizeY;
+        tank.TankY = terrain.getTerrainY((int) tank.TankX + Tank.TankSizeX / 2) - Tank.TankSizeY;
         cannon.CannonY = tank.TankY + 5;
         //Log.d("GameSurfaceView", "Tankleft : " + tank.TankX + " Tanktop : " + tank.TankY);
 
@@ -206,7 +206,7 @@ public class Missile {
     }
 
     public boolean isCrushed() {
-        return tank.TankX < 0 || (tank.TankX + tank.TankSizeX > dx);
+        return tank.TankX < 0 || (tank.TankX + Tank.TankSizeX > dx);
     }
 
 }

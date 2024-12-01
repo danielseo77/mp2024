@@ -2,8 +2,8 @@ package com.example.fortress;
 
 public class Tank {
 
-    protected final int TankSizeX = 80; // tank width
-    protected final int TankSizeY = 50; // tank height
+    public static final int TankSizeX = 80; // tank width
+    public static int TankSizeY = 50; // tank height
 
     protected int Tankhealth = 5 ; // 탱크의 현재 체력;
 
@@ -15,6 +15,8 @@ public class Tank {
         this.TankY = y;
     }
 
+    public void set_TankX(double x) {this.TankX = x; }
+    public void set_TankY(double y) {this.TankY = y; }
     public double get_TankX(){return TankX ; }
     public double get_TankY(){return TankY ; }
 

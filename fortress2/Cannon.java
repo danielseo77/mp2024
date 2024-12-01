@@ -6,8 +6,8 @@ public class Cannon {
 
     private Tank tank;
 
-    protected final int CannonSizeX = 30; // cannon width
-    protected final int CannonSizeY = 5; // cannon height
+    public static final int CannonSizeX = 30; // cannon width
+    public static final int CannonSizeY = 5; // cannon height
 
     protected double CannonX ; // 대포 위치 - 대각선 위에 있도록
     protected double CannonY ;
@@ -26,8 +26,8 @@ public class Cannon {
         this.tank = tank;
 
         // 초기 대포 위치 설정
-        this.CannonX = tank.get_TankX() + tank.TankSizeX * 0.50; // 대포 위치
-        this.CannonY = tank.get_TankY() + tank.TankSizeY * 0.92 - CannonSizeY;
+        this.CannonX = tank.get_TankX() + Tank.TankSizeX * 0.50; // 대포 위치
+        this.CannonY = tank.get_TankY() + Tank.TankSizeY * 0.92 - CannonSizeY;
 
     }
 
