@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewTreeObserver;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
@@ -89,31 +90,38 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         dummyMissileBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dot);
         dummyMissileBitmap = Bitmap.createScaledBitmap(dummyMissileBitmap, Missile.MissileSizeX, Missile.MissileSizeY, true);
 
-        getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            width = getWidth();
-            height = getHeight();
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                width = getWidth();
+                height = getHeight();
 
-            Log.d("GameSurfaceView", "Width: " + width + ", Height: " + height);
-            int random = (int)(Math.random() * 10);
-            if (random > 5) {
-                terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image);
-            } else{
-                terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image2);
+                Log.d("GameSurfaceView", "Width: " + width + ", Height: " + height);
+
+                int random = (int) (Math.random() * 10);
+                if (random > 5) {
+                    terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image);
+                } else {
+                    terrainBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.terrain_image2);
+                }
+                terrainBitmap = Bitmap.createScaledBitmap(terrainBitmap, width, height, true);
+
+                terrain = new Terrain(terrainBitmap);
+                terrain.print();
+
+                // tank 정의
+                tank = new Tank(x, terrain.getTerrain(x + Tank.TankSizeX / 2) - Tank.TankSizeY);
+                cannon = new Cannon(context, tank);
+                missile = new Missile(context, tank, cannon);
+
+                // dummy tank 정의
+                Dummy = new Tank((int) dx - Tank.TankSizeX, terrain.getTerrain((int) dx - Tank.TankSizeX / 2) - Tank.TankSizeY);
+                dummyCannon = new Cannon(context, Dummy);
+                dummyMissile = new Missile(context, Dummy, dummyCannon);
+
+                // 리스너 제거
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
-            terrainBitmap = Bitmap.createScaledBitmap(terrainBitmap, width, height, true);
-
-            terrain = new Terrain(terrainBitmap);
-            terrain.print();
-
-            // tank 정의
-            tank = new Tank(x, terrain.getTerrain(x + Tank.TankSizeX / 2) - Tank.TankSizeY);
-            cannon = new Cannon(context, tank);
-            missile = new Missile(context, tank, cannon);
-
-            // dummy tank 정의
-            Dummy = new Tank((int)dx - Tank.TankSizeX, terrain.getTerrain((int)dx - Tank.TankSizeX / 2) - Tank.TankSizeY);
-            dummyCannon = new Cannon(context, Dummy);
-            dummyMissile = new Missile(context, Dummy, dummyCannon);
         });
 
         // SurfaceView의 기본 배경 제거
